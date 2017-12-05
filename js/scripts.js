@@ -323,25 +323,12 @@ function decode(dataView) {
         errlog(overflow + " trailing bytes");
         var remainBytes = dataView.buffer.slice(offset, overflow);
         errlog("trailing chars: " + raw(overflow));
-
-        // if (remainBytes.byteLength) {
-        //     setTimeout(function() {
-        //         try {
-        //             errlog("attempting to parse trailing chars");
-        //             errlog(decode(new DataView(remainBytes)));
-        //         } catch (e) {
-        //             errlog("Error parsing input: " + e.message);
-        //             e.stack && errlog(e.stack);
-        //         }
-        //     }, 0)
-        // }
     }
     return value;
 }
 
 var outputscroller;
 function parseBase64() {
-    var wh = window.innerHeight;
     if (!logoutput) {
         logoutput = document.getElementById("log");
     }
@@ -350,11 +337,9 @@ function parseBase64() {
     }
     if(!datadisplay) {
         datadisplay = document.getElementById("datadisplay");
-        datadisplay.style.height = (wh - 110) + "px";
     }
     if(!outputscroller) {
         outputscroller = document.getElementById("output");
-        outputscroller.style.height = (wh - 110) + "px";
     }
     clear();
     var input = document.getElementById("data").value;

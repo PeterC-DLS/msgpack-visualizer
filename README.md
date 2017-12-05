@@ -7,6 +7,8 @@ found [here](https://github.com/sugendran/msgpack-visualizer).
 Differences in this fork:
 
 * Load initial data from hash parameter
+* Extract stylesheets and scripts from index.html into separate files
+* Some CSS tweaks
 
 You can find a hosted version at https://msgpack.dbrgn.ch/.
 

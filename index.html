@@ -30,14 +30,14 @@
 
         <!-- Content -->
         <div id="content">
-            <div>
+            <div id="input-wrapper">
                 <form action="javascript:parseBase64()">
                     <label for="data">Base64: </label>
                     <input type="text" id="data" style="width:60vw" value="gaVoZWxsb6V3b3JsZA==" />
                     <button onclick="parseBase64()">Parse</button>
                 </form>
             </div>
-            <div>
+            <div id="output-wrapper">
                 <div id="datadisplay"></div>
                 <div id="output">
                     <div id="json-obj" style="margin-bottom: 16px;"></div>

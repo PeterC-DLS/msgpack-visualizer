@@ -11,6 +11,8 @@ body {
     line-height: 1;
     padding: 0px 8px;
     font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
 }
 h1 {
     font-size: 48px;
@@ -20,25 +22,38 @@ h2 {
     font-size: 16px;
     margin-bottom: 8px;
 }
+#input-wrapper {
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+#output-wrapper {
+    display: flex;
+    flex-direction: row;
+}
 #datadisplay {
-    width: 400px;
-    height: 100%;
-    overflow-y:scroll;
+    width: 390px;
+    border-right: 2px solid #aaa;
     font-family: monospace;
     vertical-align: top;
-    float: left;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
 }
 #datadisplay a {
+    display: inline-block;
+    font-size: 13px;
     margin-right: 8px;
+    margin-bottom: 8px;
     text-decoration: none;
     color: #333;
     text-transform: uppercase;
-    float: left;
 }
 #datadisplay a.highlight {
     color: #33F;
 }
 #output {
-    margin-left: 440px;
-    overflow-y:scroll;
+    flex-grow: 1;
+    padding-left: 8px;
 }
