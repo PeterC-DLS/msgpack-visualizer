@@ -1,3 +1,5 @@
+const SPEC = "https://github.com/msgpack/msgpack/blob/master/spec.md";
+
 function highlight(elems, className) {
     elems.forEach(function(elem) {
         elem.className = className;
@@ -35,11 +37,11 @@ function log(position, length, str) {
     var a = document.createElement("a");
     a.href = "#";
     a.rel = position + "," + length;
-    a.innerHTML = "position " + position + ": ";
+    a.innerHTML = "position " + position;
     a.addEventListener("mouseover", onPositionHover);
     div.appendChild(a);
     var span = document.createElement("span");
-    span.innerText = str;
+    span.innerHTML = ": " + str;
     div.appendChild(span);
     logoutput.appendChild(div);
 }
@@ -141,7 +143,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 2;
             var result = raw(length);
-            log(startOffset, offset - startOffset, "bin 8 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin8 marker with " + length + " items");
             return result;
             // bin 16
         case 0xc5:
@@ -149,7 +151,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 3;
             var result = raw(length);
-            log(startOffset, offset - startOffset, "bin 16 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin16 marker with " + length + " items");
             return result;
             // bin 32
         case 0xc6:
@@ -157,7 +159,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 5;
             var result = raw(length);
-            log(startOffset, offset - startOffset, "bin 32 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin32 marker with " + length + " items");
             return result;
             // float
         case 0xca:
@@ -224,7 +226,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 3;
             var result = map(length);
-            log(startOffset, offset - startOffset, "map16 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map16 marker with " + length + " items");
             return result;
             // map 32
         case 0xdf:
@@ -232,7 +234,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 5;
             var result = map(length);
-            log(startOffset, offset - startOffset, "map32 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map323232323232th " + length + " items");
             return result;
             // array 16
         case 0xdc:
@@ -240,7 +242,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 3;
             var result = array(length);
-            log(startOffset, offset - startOffset, "array16 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array16 marker with " + length + " items");
             return result;
             // array 32
         case 0xdd:
@@ -248,7 +250,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset += 5;
             var result = array(length);
-            log(startOffset, offset - startOffset, "array32 marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array32 marker with " + length + " items");
             return result;
             // raw 8
         case 0xd9:
@@ -290,7 +292,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset++;
             var result = map(length);
-            log(startOffset, offset - startOffset, "fixed length map marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>fixed length map</a> marker with " + length + " items");
             return result;
         }
         // FixArray
@@ -299,7 +301,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset++;
             var result = array(length);
-            log(startOffset, offset - startOffset, "fixed length array marker with " + length + " items");
+            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
             return result;
         }
         // Positive FixNum
