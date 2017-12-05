@@ -1,15 +1,20 @@
-# msgpack-visualizer
+# Msgpack Visualizer
 
-This is a fork of a msgpack visualizer that @sugendran wrote. His code can be
-found at https://github.com/sugendran/msgpack-visualizer.
+This is a fork of a msgpack visualizer that
+[@sugendran](https://github.com/sugendran/) wrote. His original code can be
+found [here](https://github.com/sugendran/msgpack-visualizer).
 
-I tried to improve a few things. If you want to use it, it is hosted at
-https://msgpack.dbrgn.ch/
+Differences in this fork:
+
+* Load initial data from hash parameter
+
+You can find a hosted version at https://msgpack.dbrgn.ch/.
 
 ## Parameters
 
 If you want to pass in the base64 data through the URL, append `#base64=<data>`
 to the URL, where `<data>` is the URL encoded base64 string.
+
 
 # MIT LICENSE
 
