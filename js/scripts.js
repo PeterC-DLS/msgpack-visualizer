@@ -431,12 +431,20 @@ function urldecode(str) {
 onDocumentReady(function() {
     // Load initial data from URL hash
     var hashParams = getHashParams();
+    console.log('hash params', hashParams);
 
     // Accept base64 data
     if (hashParams['base64'] !== undefined) {
         console.info('Loading base64 data from URL hash');
         var data = hashParams['base64'];
         var decoded = urldecode(data);
-        document.getElementById("data").value = decoded;
+        document.getElementById('input-type').value = 'base64';
+        document.getElementById('data').value = decoded;
+    } else if (hashParams['array'] !== undefined) {
+        console.info('Loading array literal data from URL hash');
+        var data = hashParams['array'];
+        var decoded = urldecode(data);
+        document.getElementById('input-type').value = 'array';
+        document.getElementById('data').value = decoded;
     }
 });
