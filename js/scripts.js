@@ -329,35 +329,70 @@ function decode(dataView) {
     return value;
 }
 
-var outputscroller;
-function parseBase64() {
-    if (!logoutput) {
-        logoutput = document.getElementById("log");
-    }
-    if (!jsonobj) {
-        jsonobj = document.getElementById("json-obj");
-    }
-    if(!datadisplay) {
-        datadisplay = document.getElementById("datadisplay");
-    }
-    if(!outputscroller) {
-        outputscroller = document.getElementById("output");
-    }
+/**
+ * Parse the input based on the input type selector.
+ * Call the appropriate parsing function.
+ */
+function parseInput() {
+    const inputType = document.getElementById("input-type").value;
+    const data = document.getElementById("data").value;
+
+    if (!logoutput) logoutput = document.getElementById("log");
+    if (!jsonobj) jsonobj = document.getElementById("json-obj");
+    if (!datadisplay) datadisplay = document.getElementById("datadisplay");
+
     clear();
-    var input = document.getElementById("data").value;
-    var buff = null;
+
+    switch (inputType) {
+        case "base64":
+            parseBase64(data);
+            break;
+        case "array":
+            parseArray(data);
+            break;
+        default:
+            alert("Invalid input type: " + inputType);
+    }
+}
+
+/**
+ * Parse the input as base64.
+ */
+function parseBase64(data) {
     try {
-        buff = Base64Binary.decodeArrayBuffer(input);
-        var dataView = new DataView(buff);
-        for(var i=0, ii=dataView.byteLength; i<ii; i++) {
-            var byteVal = dataView.getUint8(i);
-            displayByte(byteVal, i);
-        }
-        jsonobj.innerHTML = JSON.stringify(decode(dataView));
+        const buff = Base64Binary.decodeArrayBuffer(data)
+        const dataView = new DataView(buff);
+        showParsedData(dataView);
     } catch (e) {
         errlog("Error parsing input: " + e.message);
         e.stack && errlog(e.stack);
     }
+}
+
+/**
+ * Parse the input as array.
+ */
+function parseArray(data) {
+    try {
+        const array = JSON.parse(data);
+        const u8array = new Uint8Array(array);
+        const dataView = new DataView(u8array.buffer);
+        showParsedData(dataView);
+    } catch (e) {
+        errlog("Error parsing input: " + e.message);
+        e.stack && errlog(e.stack);
+    }
+}
+
+/**
+ * Show the parsed data on the page.
+ */
+function showParsedData(dataView) {
+    for (var i=0; i<dataView.byteLength; i++) {
+        const byteVal = dataView.getUint8(i);
+        displayByte(byteVal, i);
+    }
+    jsonobj.innerHTML = JSON.stringify(decode(dataView));
 }
 
 // Document ready function, based on http://youmightnotneedjquery.com/
@@ -396,7 +431,6 @@ function urldecode(str) {
 onDocumentReady(function() {
     // Load initial data from URL hash
     var hashParams = getHashParams();
-    console.log('Hash params:', hashParams);
 
     // Accept base64 data
     if (hashParams['base64'] !== undefined) {

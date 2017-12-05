@@ -6,7 +6,8 @@ found [here](https://github.com/sugendran/msgpack-visualizer).
 
 Differences in this fork:
 
-* Load initial data from hash parameter
+* Add support for parsing array notation (`[1, 2, 3, 4]`)
+* Load initial data from hash parameter (`#base64=<data>`)
 * Extract stylesheets and scripts from index.html into separate files
 * Some CSS tweaks
 

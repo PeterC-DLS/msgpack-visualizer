@@ -28,10 +28,13 @@
         <!-- Content -->
         <div id="content">
             <div id="input-wrapper">
-                <form action="javascript:parseBase64()">
-                    <label for="data">Base64: </label>
+                <form action="javascript:parseInput()">
+                    <select id="input-type">
+                        <option value="base64" selected>Base64:</option>
+                        <option value="array">Array:</option>
+                    </select>
                     <input type="text" id="data" style="width:60vw" value="gaVoZWxsb6V3b3JsZA==" />
-                    <button onclick="parseBase64()">Parse</button>
+                    <button type="submit">Parse</button>
                 </form>
             </div>
             <div id="output-wrapper">
