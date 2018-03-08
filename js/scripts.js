@@ -306,7 +306,7 @@ function decode(dataView) {
         }
         // Positive FixNum
         if ((type & 0x80) === 0x00) {
-            log(offset, 1, "postive fix length number with value " + type);
+            log(offset, 1, "positive fix length number with value " + type);
             offset++;
             return type;
         }
