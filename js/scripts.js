@@ -350,6 +350,9 @@ function parseInput() {
         case "array":
             parseArray(data);
             break;
+        case "hexarray":
+            parseHexarray(data);
+            break;
         default:
             alert("Invalid input type: " + inputType);
     }
@@ -371,11 +374,39 @@ function parseBase64(data) {
 
 /**
  * Parse the input as array.
+ * Example: [1, 2, 254, 255]
  */
 function parseArray(data) {
     try {
         const array = JSON.parse(data);
         const u8array = new Uint8Array(array);
+        const dataView = new DataView(u8array.buffer);
+        showParsedData(dataView);
+    } catch (e) {
+        errlog("Error parsing input: " + e.message);
+        e.stack && errlog(e.stack);
+    }
+}
+
+/**
+ * Parse the input as hex array.
+ * Example: [01, 02, fe, ff]
+ */
+function parseHexarray(data) {
+    try {
+        const trimmed = data.trim();
+        if (trimmed.charAt(0) !== "[") {
+            throw new Error("Data does not start with '['");
+        }
+        if (trimmed.charAt(trimmed.length - 1) !== "]") {
+            throw new Error("Data does not end with ']'");
+        }
+        const inner = trimmed.substr(1, trimmed.length - 2);
+        const numbers = inner
+            .split(",")
+            .map(n => n.trim())
+            .map(n => parseInt(n, 16));
+        const u8array = new Uint8Array(numbers);
         const dataView = new DataView(u8array.buffer);
         showParsedData(dataView);
     } catch (e) {
@@ -445,6 +476,12 @@ onDocumentReady(function() {
         var data = hashParams['array'];
         var decoded = urldecode(data);
         document.getElementById('input-type').value = 'array';
+        document.getElementById('data').value = decoded;
+    } else if (hashParams['hexarray'] !== undefined) {
+        console.info('Loading hexarray literal data from URL hash');
+        var data = hashParams['hexarray'];
+        var decoded = urldecode(data);
+        document.getElementById('input-type').value = 'hexarray';
         document.getElementById('data').value = decoded;
     }
 });

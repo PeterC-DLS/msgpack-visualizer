@@ -6,7 +6,8 @@ found [here](https://github.com/sugendran/msgpack-visualizer).
 
 Differences in this fork:
 
-* Add support for parsing array notation (`[1, 2, 3, 4]`)
+* Add support for parsing array notation (`[1, 2, 254, 255]`)
+* Add support for parsing hexarray notation (`[01, 02, fe, ff]`)
 * Load initial data from hash parameter (`#base64=<data>` or `#array=<data>`)
 * Extract stylesheets and scripts from index.html into separate files
 * Some CSS tweaks
@@ -16,8 +17,8 @@ You can find a hosted version at https://msgpack.dbrgn.ch/.
 ## Parameters
 
 If you want to pass in the initial data through the URL, append
-`#base64=<data>` or `#array=<data>` to the URL, where `<data>` is the URL
-encoded data string that should end up in the input field.
+`#base64=<data>`, `#array=<data>` or `#hexarray=<data>` to the URL, where
+`<data>` is the URL encoded data string that should end up in the input field.
 
 
 # MIT LICENSE
