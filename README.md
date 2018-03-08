@@ -23,8 +23,8 @@ If you want to pass in the initial data through the URL, append
 
 # MIT LICENSE
 
-Copyright (C) 2012 Sugendran Ganess
-Copyright (C) 2017 Danilo Bargen
+Copyright (C) 2012-2017 Sugendran Ganess
+Copyright (C) 2017-2018 Danilo Bargen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
