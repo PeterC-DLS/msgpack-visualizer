@@ -8,6 +8,8 @@ Differences in this fork:
 
 * Add support for parsing array notation (`[1, 2, 254, 255]`)
 * Add support for parsing hexarray notation (`[01, 02, fe, ff]`)
+* Add support for parsing data copied from Wireshark with "Copy Bytes as a Hex
+Stream" (`0102feff`)
 * Load initial data from hash parameter (`#base64=<data>` or `#array=<data>`)
 * Extract stylesheets and scripts from index.html into separate files
 * Some CSS tweaks

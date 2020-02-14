@@ -353,6 +353,9 @@ function parseInput() {
         case "hexarray":
             parseHexarray(data);
             break;
+        case "ws_hexstream":
+            parseWSHexStream(data);
+            break;
         default:
             alert("Invalid input type: " + inputType);
     }
@@ -414,6 +417,28 @@ function parseHexarray(data) {
         e.stack && errlog(e.stack);
     }
 }
+
+/**
+ * Parse the input as a WireShark Hex stream.
+ * Example: 0102feff
+ */
+function parseWSHexStream(data) {
+    try {
+        const trimmed = data.trim();
+        const inner = trimmed;
+        const numbers = inner
+            .match(/.{1,2}/g)
+            .map(n => n.trim())
+            .map(n => parseInt(n, 16));
+        const u8array = new Uint8Array(numbers);
+        const dataView = new DataView(u8array.buffer);
+        showParsedData(dataView);
+    } catch (e) {
+        errlog("Error parsing input: " + e.message);
+        e.stack && errlog(e.stack);
+    }
+}
+
 
 /**
  * Show the parsed data on the page.
