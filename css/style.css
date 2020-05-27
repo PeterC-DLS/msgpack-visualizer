@@ -13,6 +13,10 @@ body {
     font-family: sans-serif;
     display: flex;
     flex-direction: column;
+    height: 98%;
+}
+html, body, #content, #output-wrapper {
+    height: 100%;
 }
 h1 {
     font-size: 48px;
@@ -40,6 +44,8 @@ h1 {
     flex-wrap: wrap;
     justify-content: flex-start;
     align-content: flex-start;
+    overflow-y: auto;
+    height: 100%;
 }
 #datadisplay a {
     display: inline-block;
@@ -56,6 +62,8 @@ h1 {
 #output {
     flex-grow: 1;
     padding-left: 8px;
+    overflow-y: auto;
+    height: 100%;
 }
 #json-obj {
     word-break: break-all;
