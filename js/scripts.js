@@ -36,6 +36,7 @@ function log(position, length, str) {
     var div = document.createElement("div");
     var a = document.createElement("a");
     a.href = "#";
+    a.className = "poslink";
     a.rel = position + "," + length;
     a.innerHTML = "position " + position;
     a.addEventListener("mouseover", onPositionHover);
@@ -105,11 +106,11 @@ function bufToString(buf) {
 function decode(dataView) {
     var offset = 0;
 
-    function map(length) {
+    function map(indent, length) {
         var value = {};
         for (var i = 0; i < length; i++) {
-            var key = parse("key: ");
-            value[key] = parse("value: ");
+            var key = parse(indent + 1, "key: ");
+            value[key] = parse(indent + 1, "value: ");
         }
         return value;
     }
@@ -120,10 +121,10 @@ function decode(dataView) {
         return value;
     }
 
-    function array(length) {
+    function array(indent, length) {
         var value = new Array(length);
         for (var i = 0; i < length; i++) {
-            value[i] = parse("arr_idx " + i.toString() + ": ");
+            value[i] = parse(indent + 1, "arr_idx " + i.toString() + ": ");
         }
         return value;
     }
@@ -131,22 +132,21 @@ function decode(dataView) {
     var extlog = log;
     var extlogedit = logedit;
 
-    function parse(logprefix) {
+    function parse(indent, logprefix) {
         var type = dataView.getUint8(offset);
         var value, length;
+        if (!logprefix) {
+            logprefix = "";
+        }
+
+        var indentstr = "|&nbsp&nbsp&nbsp".repeat(indent) + "+-- ";
 
         function log(position, length, str) {
-            if (!logprefix) {
-                logprefix = "";
-            }
-            return extlog(position, length, logprefix + str);
+            return extlog(position, length, indentstr + logprefix + str);
         };
 
         function logedit(div, position, length, str) {
-            if (!logprefix) {
-                logprefix = "";
-            }
-            return extlogedit(div, position, length, logprefix + str);
+            return extlogedit(div, position, length, indentstr + logprefix + str);
         }
 
         switch (type) {
@@ -256,7 +256,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 3;
                 var parent = log(startOffset, offset - startOffset, "placeholder");
-                var result = map(length);
+                var result = map(indent, length);
                 logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map16 marker with " + length + " items");
                 return result;
             // map 32
@@ -265,7 +265,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 5;
                 var parent = log(startOffset, offset - startOffset, "placeholder");
-                var result = map(length);
+                var result = map(indent, length);
                 logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map32 marker with " + length + " items")
                 return result;
             // array 16
@@ -274,7 +274,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 3;
                 var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "placeholder");
-                var result = array(length);
+                var result = array(indent, length);
                 logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array16 marker with " + length + " items");
                 return result;
             // array 32
@@ -283,7 +283,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 5;
                 var parent = log(startOffset, offset - startOffset, "placeholder");
-                var result = array(length);
+                var result = array(indent, length);
                 logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array32 marker with " + length + " items");
                 return result;
             // raw 8
@@ -326,7 +326,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset++;
             var parent = log(startOffset, offset - startOffset, "placeholder");
-            var result = map(length);
+            var result = map(indent, length);
             logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>fixed length map</a> marker with " + length + " items");
             return result;
         }
@@ -336,7 +336,7 @@ function decode(dataView) {
             var startOffset = offset;
             offset++;
             var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
-            var result = array(length);
+            var result = array(indent, length);
             logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
             return result;
         }
@@ -355,7 +355,7 @@ function decode(dataView) {
         }
         throw new Error("Unknown type 0x" + type.toString(16));
     }
-    var value = parse();
+    var value = parse(0);
     if (offset !== dataView.byteLength) {
         var overflow = dataView.byteLength - offset;
         errlog(overflow + " trailing bytes");

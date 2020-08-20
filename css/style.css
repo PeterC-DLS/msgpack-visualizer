@@ -21,6 +21,12 @@ html, body {
     padding: 0;
 }
 
+.poslink {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+}
+
 #output-wrapper {
     display: flex;
     flex-flow: row;
