@@ -108,8 +108,8 @@ function decode(dataView) {
     function map(length) {
         var value = {};
         for (var i = 0; i < length; i++) {
-            var key = parse();
-            value[key] = parse();
+            var key = parse("key: ");
+            value[key] = parse("value: ");
         }
         return value;
     }
@@ -123,14 +123,32 @@ function decode(dataView) {
     function array(length) {
         var value = new Array(length);
         for (var i = 0; i < length; i++) {
-            value[i] = parse();
+            value[i] = parse("arr_idx " + i.toString() + ": ");
         }
         return value;
     }
 
-    function parse() {
+    var extlog = log;
+    var extlogedit = logedit;
+
+    function parse(logprefix) {
         var type = dataView.getUint8(offset);
         var value, length;
+
+        function log(position, length, str) {
+            if (!logprefix) {
+                logprefix = "";
+            }
+            return extlog(position, length, logprefix + str);
+        };
+
+        function logedit(div, position, length, str) {
+            if (!logprefix) {
+                logprefix = "";
+            }
+            return extlogedit(div, position, length, logprefix + str);
+        }
+
         switch (type) {
             // nil
             case 0xc0:
