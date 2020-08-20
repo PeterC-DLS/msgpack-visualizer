@@ -393,7 +393,7 @@ function parseArray(data) {
 
 /**
  * Parse the input as hex array.
- * Example: [01, 02, fe, ff]
+ * Example: [01, 02, fe, ff] (separator can be commas and/or space)
  */
 function parseHexarray(data) {
     try {
@@ -406,7 +406,7 @@ function parseHexarray(data) {
         }
         const inner = trimmed.substr(1, trimmed.length - 2);
         const numbers = inner
-            .split(",")
+            .split(/[\s,]+/)
             .map(n => n.trim())
             .map(n => parseInt(n, 16));
         const u8array = new Uint8Array(numbers);
