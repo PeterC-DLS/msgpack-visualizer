@@ -7,6 +7,11 @@ h1, h2, p, a, form, label {
     font: inherit;
     vertical-align: baseline;
 }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 body {
     line-height: 1;
     padding: 8px;
@@ -14,11 +19,6 @@ body {
     display: flex;
     flex-flow: column;
     height: 100%;
-}
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
 }
 
 .poslink {
