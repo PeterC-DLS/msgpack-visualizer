@@ -36,6 +36,7 @@ function log(position, length, str) {
     var div = document.createElement("div");
     var a = document.createElement("a");
     a.href = "#";
+    a.className = "poslink";
     a.rel = position + "," + length;
     a.innerHTML = "position " + position;
     a.addEventListener("mouseover", onPositionHover);
@@ -44,6 +45,16 @@ function log(position, length, str) {
     span.innerHTML = ": " + str;
     div.appendChild(span);
     logoutput.appendChild(div);
+    return div; // Return the created element in case it needs to be modified
+}
+
+function logedit(div, position, length, str) {
+    var a = div.children[0];
+    var span = div.children[1];
+
+    a.rel = position + "," + length;
+    a.innerHTML = "position " + position;
+    span.innerHTML = ": " + str;
 }
 
 function clear() {
@@ -95,11 +106,11 @@ function bufToString(buf) {
 function decode(dataView) {
     var offset = 0;
 
-    function map(length) {
+    function map(indent, length) {
         var value = {};
         for (var i = 0; i < length; i++) {
-            var key = parse();
-            value[key] = parse();
+            var key = parse(indent + 1, "key: ");
+            value[key] = parse(indent + 1, "value: ");
         }
         return value;
     }
@@ -110,172 +121,195 @@ function decode(dataView) {
         return value;
     }
 
-    function array(length) {
+    function array(indent, length) {
         var value = new Array(length);
         for (var i = 0; i < length; i++) {
-            value[i] = parse();
+            value[i] = parse(indent + 1, "arr_idx " + i.toString() + ": ");
         }
         return value;
     }
 
-    function parse() {
+    var extlog = log;
+    var extlogedit = logedit;
+
+    function parse(indent, logprefix) {
         var type = dataView.getUint8(offset);
         var value, length;
+        if (!logprefix) {
+            logprefix = "";
+        }
+
+        var indentstr = "|&nbsp&nbsp&nbsp".repeat(indent) + "+-- ";
+
+        function log(position, length, str) {
+            return extlog(position, length, indentstr + logprefix + str);
+        };
+
+        function logedit(div, position, length, str) {
+            return extlogedit(div, position, length, indentstr + logprefix + str);
+        }
+
         switch (type) {
             // nil
-        case 0xc0:
-            log(offset, 1, "NULL");
-            offset++;
-            return null;
+            case 0xc0:
+                log(offset, 1, "NULL");
+                offset++;
+                return null;
             // false
-        case 0xc2:
-            log(offset, 1, "false");
-            offset++;
-            return false;
+            case 0xc2:
+                log(offset, 1, "false");
+                offset++;
+                return false;
             // true
-        case 0xc3:
-            log(offset, 1, "true");
-            offset++;
-            return true;
+            case 0xc3:
+                log(offset, 1, "true");
+                offset++;
+                return true;
             // bin 8
-        case 0xc4:
-            length = dataView.getUint8(offset + 1);
-            var startOffset = offset;
-            offset += 2;
-            var result = raw(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin8 marker with " + length + " items");
-            return result;
+            case 0xc4:
+                length = dataView.getUint8(offset + 1);
+                var startOffset = offset;
+                offset += 2;
+                var result = raw(length);
+                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin8 marker with " + length + " items");
+                return result;
             // bin 16
-        case 0xc5:
-            length = dataView.getUint16(offset + 1);
-            var startOffset = offset;
-            offset += 3;
-            var result = raw(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin16 marker with " + length + " items");
-            return result;
+            case 0xc5:
+                length = dataView.getUint16(offset + 1);
+                var startOffset = offset;
+                offset += 3;
+                var result = raw(length);
+                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin16 marker with " + length + " items");
+                return result;
             // bin 32
-        case 0xc6:
-            length = dataView.getUint32(offset + 1);
-            var startOffset = offset;
-            offset += 5;
-            var result = raw(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin32 marker with " + length + " items");
-            return result;
+            case 0xc6:
+                length = dataView.getUint32(offset + 1);
+                var startOffset = offset;
+                offset += 5;
+                var result = raw(length);
+                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin32 marker with " + length + " items");
+                return result;
             // float
-        case 0xca:
-            value = dataView.getFloat32(offset + 1);
-            log(offset, 5, "float value " + value);
-            offset += 5;
-            return value;
+            case 0xca:
+                value = dataView.getFloat32(offset + 1);
+                log(offset, 5, "float value " + value);
+                offset += 5;
+                return value;
             // double
-        case 0xcb:
-            value = dataView.getFloat64(offset + 1);
-            log(offset, 9, "double value " + value);
-            offset += 9;
-            return value;
+            case 0xcb:
+                value = dataView.getFloat64(offset + 1);
+                log(offset, 9, "double value " + value);
+                offset += 9;
+                return value;
             // uint8
-        case 0xcc:
-            value = dataView.getUint8(offset + 1);
-            log(offset, 2, "uint8 value " + value);
-            offset += 2;
-            return value;
+            case 0xcc:
+                value = dataView.getUint8(offset + 1);
+                log(offset, 2, "uint8 value " + value);
+                offset += 2;
+                return value;
             // uint 16
-        case 0xcd:
-            value = dataView.getUint16(offset + 1);
-            log(offset, 3, "uint16 value " + value);
-            offset += 3;
-            return value;
+            case 0xcd:
+                value = dataView.getUint16(offset + 1);
+                log(offset, 3, "uint16 value " + value);
+                offset += 3;
+                return value;
             // uint 32
-        case 0xce:
-            value = dataView.getUint32(offset + 1);
-            log(offset, 5, "uint32 value " + value);
-            offset += 5;
-            return value;
+            case 0xce:
+                value = dataView.getUint32(offset + 1);
+                log(offset, 5, "uint32 value " + value);
+                offset += 5;
+                return value;
             // uint64
-        case 0xcf:
-            // value = buffer.readUInt64BE(offset + 1);
-            log(offset, 9, "uint64 marker - cannot parse uint64 to javascript, setting to Infinity");
-            offset += 9;
-            return Infinity;
+            case 0xcf:
+                // value = buffer.readUInt64BE(offset + 1);
+                log(offset, 9, "uint64 marker - cannot parse uint64 to javascript, setting to Infinity");
+                offset += 9;
+                return Infinity;
             // int 8
-        case 0xd0:
-            value = dataView.getInt8(offset + 1);
-            log(offset, 2, "int8 value " + value);
-            offset += 2;
-            return value;
+            case 0xd0:
+                value = dataView.getInt8(offset + 1);
+                log(offset, 2, "int8 value " + value);
+                offset += 2;
+                return value;
             // int 16
-        case 0xd1:
-            value = dataView.getInt16(offset + 1);
-            log(offset, 3, "int16 value " + value);
-            offset += 3;
-            return value;
+            case 0xd1:
+                value = dataView.getInt16(offset + 1);
+                log(offset, 3, "int16 value " + value);
+                offset += 3;
+                return value;
             // int 32
-        case 0xd2:
-            value = dataView.getInt32(offset + 1);
-            log(offset, 5, "int32 value " + value);
-            offset += 5;
-            return value;
+            case 0xd2:
+                value = dataView.getInt32(offset + 1);
+                log(offset, 5, "int32 value " + value);
+                offset += 5;
+                return value;
             // int 64
-        case 0xd3:
-            log(offset, 9, "int64 marker - cannot parse uint64 to javascript, setting to Infinity");
-            offset += 9;
-            return Infinity;
+            case 0xd3:
+                log(offset, 9, "int64 marker - cannot parse uint64 to javascript, setting to Infinity");
+                offset += 9;
+                return Infinity;
             // map 16
-        case 0xde:
-            length = dataView.getUint16(offset + 1);
-            var startOffset = offset;
-            offset += 3;
-            var result = map(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map16 marker with " + length + " items");
-            return result;
+            case 0xde:
+
+                length = dataView.getUint16(offset + 1);
+
+                var startOffset = offset;
+                offset += 3;
+                var parent = log(startOffset, offset - startOffset, "placeholder");
+                var result = map(indent, length);
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map16 marker with " + length + " items");
+                return result;
             // map 32
-        case 0xdf:
-            length = dataView.getUint32(offset + 1);
-            var startOffset = offset;
-            offset += 5;
-            var result = map(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map323232323232th " + length + " items");
-            return result;
+            case 0xdf:
+                length = dataView.getUint32(offset + 1);
+                var startOffset = offset;
+                offset += 5;
+                var parent = log(startOffset, offset - startOffset, "placeholder");
+                var result = map(indent, length);
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map32 marker with " + length + " items")
+                return result;
             // array 16
-        case 0xdc:
-            length = dataView.getUint16(offset + 1);
-            var startOffset = offset;
-            offset += 3;
-            var result = array(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array16 marker with " + length + " items");
-            return result;
+            case 0xdc:
+                length = dataView.getUint16(offset + 1);
+                var startOffset = offset;
+                offset += 3;
+                var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "placeholder");
+                var result = array(indent, length);
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array16 marker with " + length + " items");
+                return result;
             // array 32
-        case 0xdd:
-            length = dataView.getUint32(offset + 1);
-            var startOffset = offset;
-            offset += 5;
-            var result = array(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array32 marker with " + length + " items");
-            return result;
+            case 0xdd:
+                length = dataView.getUint32(offset + 1);
+                var startOffset = offset;
+                offset += 5;
+                var parent = log(startOffset, offset - startOffset, "placeholder");
+                var result = array(indent, length);
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array32 marker with " + length + " items");
+                return result;
             // raw 8
-        case 0xd9:
-            length = dataView.getUint8(offset + 1);
-            var startOffset = offset;
-            offset += 2;
-            var result = raw(length);
-            log(startOffset, offset - startOffset, "raw8 marker - " + result);
-            return result;
+            case 0xd9:
+                length = dataView.getUint8(offset + 1);
+                var startOffset = offset;
+                offset += 2;
+                var result = raw(length);
+                log(startOffset, offset - startOffset, "raw8 marker - " + result);
+                return result;
             // raw 16
-        case 0xda:
-            length = dataView.getUint16(offset + 1);
-            var startOffset = offset;
-            offset += 3;
-            var result = raw(length);
-            log(startOffset, offset - startOffset, "raw16 marker - " + result);
-            return result;
+            case 0xda:
+                length = dataView.getUint16(offset + 1);
+                var startOffset = offset;
+                offset += 3;
+                var result = raw(length);
+                log(startOffset, offset - startOffset, "raw16 marker - " + result);
+                return result;
             // raw 32
-        case 0xdb:
-            length = dataView.getUint32(offset + 1);
-            var startOffset = offset;
-            offset += 5;
-            var result = raw(length);
-            log(startOffset, offset - startOffset, "raw32 marker - " + result);
-            return result;
+            case 0xdb:
+                length = dataView.getUint32(offset + 1);
+                var startOffset = offset;
+                offset += 5;
+                var result = raw(length);
+                log(startOffset, offset - startOffset, "raw32 marker - " + result);
+                return result;
         }
         // FixRaw
         if ((type & 0xe0) === 0xa0) {
@@ -291,8 +325,9 @@ function decode(dataView) {
             length = type & 0x0f;
             var startOffset = offset;
             offset++;
-            var result = map(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>fixed length map</a> marker with " + length + " items");
+            var parent = log(startOffset, offset - startOffset, "placeholder");
+            var result = map(indent, length);
+            logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>fixed length map</a> marker with " + length + " items");
             return result;
         }
         // FixArray
@@ -300,8 +335,9 @@ function decode(dataView) {
             length = type & 0x0f;
             var startOffset = offset;
             offset++;
-            var result = array(length);
-            log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
+            var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
+            var result = array(indent, length);
+            logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
             return result;
         }
         // Positive FixNum
@@ -319,7 +355,7 @@ function decode(dataView) {
         }
         throw new Error("Unknown type 0x" + type.toString(16));
     }
-    var value = parse();
+    var value = parse(0);
     if (offset !== dataView.byteLength) {
         var overflow = dataView.byteLength - offset;
         errlog(overflow + " trailing bytes");
@@ -393,7 +429,7 @@ function parseArray(data) {
 
 /**
  * Parse the input as hex array.
- * Example: [01, 02, fe, ff]
+ * Example: [01, 02, fe, ff] (separator can be commas and/or space)
  */
 function parseHexarray(data) {
     try {
@@ -406,7 +442,7 @@ function parseHexarray(data) {
         }
         const inner = trimmed.substr(1, trimmed.length - 2);
         const numbers = inner
-            .split(",")
+            .split(/[\s,]+/)
             .map(n => n.trim())
             .map(n => parseInt(n, 16));
         const u8array = new Uint8Array(numbers);

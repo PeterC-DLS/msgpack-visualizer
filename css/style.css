@@ -12,11 +12,32 @@ body {
     padding: 8px;
     font-family: sans-serif;
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
+    height: 100%;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.poslink {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+}
+
+#output-wrapper {
+    display: flex;
+    flex-flow: row;
+    flex: 0 1 auto;
 }
 h1 {
     font-size: 48px;
     margin-bottom: 16px;
+}
+#header {
+    flex: 0 1 auto;
 }
 #header p {
     font-size: 16px;
@@ -26,20 +47,25 @@ h1 {
     margin-top: 8px;
     margin-bottom: 16px;
 }
+#content {
+    display: flex;
+    flex-flow: column;
+    flex: 0 1 auto;
+    height: 100%;
+}
 #output-wrapper {
     display: flex;
-    flex-direction: row;
+    flex-flow: row;
+    flex: 1 1 auto;
 }
 #datadisplay {
-    width: 390px;
     border-right: 2px solid #aaa;
     font-family: monospace;
     vertical-align: top;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-content: flex-start;
+    overflow-y: auto;
+    min-height: 100%;
+    height: 0;
+    flex: 0 1 25%;
 }
 #datadisplay a {
     display: inline-block;
@@ -56,6 +82,10 @@ h1 {
 #output {
     flex-grow: 1;
     padding-left: 8px;
+    overflow-y: auto;
+    min-height: 100%;
+    height: 0;
+    flex: 0 1 75%;
 }
 #json-obj {
     word-break: break-all;
