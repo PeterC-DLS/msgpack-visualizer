@@ -124,7 +124,7 @@ function decode(dataView) {
     function array(indent, length) {
         var value = new Array(length);
         for (var i = 0; i < length; i++) {
-            value[i] = parse(indent + 1, "arr_idx " + i.toString() + ": ");
+            value[i] = parse(indent + 1, "[" + i.toString() + "]: ");
         }
         return value;
     }
