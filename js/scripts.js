@@ -100,6 +100,10 @@ function bufToString(buf) {
     return output;
 }
 
+function formatNumberOfItems(length) {
+    return length === 1 ? "(<b>1</b> item)" : "(<b>" + length + "</b> items)";
+}
+
 // javascript msgpack parsing taken from
 // https://github.com/creationix/msgpack-js/blob/master/msgpack.js
 // and then heavily tweaked to my needs
@@ -171,7 +175,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 2;
                 var result = raw(length);
-                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin8 marker with " + length + " items");
+                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin8 marker " + formatNumberOfItems(length));
                 return result;
             // bin 16
             case 0xc5:
@@ -179,7 +183,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 3;
                 var result = raw(length);
-                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin16 marker with " + length + " items");
+                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin16 marker " + formatNumberOfItems(length));
                 return result;
             // bin 32
             case 0xc6:
@@ -187,7 +191,7 @@ function decode(dataView) {
                 var startOffset = offset;
                 offset += 5;
                 var result = raw(length);
-                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin32 marker with " + length + " items");
+                log(startOffset, offset - startOffset, "<a href='" + SPEC + "#bin-format-family'>bin32 marker " + formatNumberOfItems(length));
                 return result;
             // float
             case 0xca:
@@ -255,14 +259,12 @@ function decode(dataView) {
                 return value;
             // map 16
             case 0xde:
-
                 length = dataView.getUint16(offset + 1);
-
                 var startOffset = offset;
                 offset += 3;
                 var parent = log(startOffset, offset - startOffset, "placeholder");
                 var result = map(indent, length);
-                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map16 marker with " + length + " items");
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map16 marker " + formatNumberOfItems(length));
                 return result;
             // map 32
             case 0xdf:
@@ -271,7 +273,7 @@ function decode(dataView) {
                 offset += 5;
                 var parent = log(startOffset, offset - startOffset, "placeholder");
                 var result = map(indent, length);
-                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map32 marker with " + length + " items")
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>map32 marker " + formatNumberOfItems(length));
                 return result;
             // array 16
             case 0xdc:
@@ -280,7 +282,7 @@ function decode(dataView) {
                 offset += 3;
                 var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "placeholder");
                 var result = array(indent, length);
-                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array16 marker with " + length + " items");
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array16 marker " + formatNumberOfItems(length));
                 return result;
             // array 32
             case 0xdd:
@@ -289,40 +291,40 @@ function decode(dataView) {
                 offset += 5;
                 var parent = log(startOffset, offset - startOffset, "placeholder");
                 var result = array(indent, length);
-                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array32 marker with " + length + " items");
+                logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>array32 marker " + formatNumberOfItems(length));
                 return result;
-            // raw 8
+            // str 8
             case 0xd9:
                 length = dataView.getUint8(offset + 1);
                 var startOffset = offset;
                 offset += 2;
                 var result = raw(length);
-                log(startOffset, offset - startOffset, "raw8 marker - " + result);
+                log(startOffset, offset - startOffset, "str8 marker: &quot;" + result + "&quot;");
                 return result;
-            // raw 16
+            // str 16
             case 0xda:
                 length = dataView.getUint16(offset + 1);
                 var startOffset = offset;
                 offset += 3;
                 var result = raw(length);
-                log(startOffset, offset - startOffset, "raw16 marker - " + result);
+                log(startOffset, offset - startOffset, "str16 marker: &quot;" + result + "&quot;");
                 return result;
-            // raw 32
+            // str 32
             case 0xdb:
                 length = dataView.getUint32(offset + 1);
                 var startOffset = offset;
                 offset += 5;
                 var result = raw(length);
-                log(startOffset, offset - startOffset, "raw32 marker - " + result);
+                log(startOffset, offset - startOffset, "str32 marker: &quot;" + result + "&quot;");
                 return result;
         }
-        // FixRaw
+        // FixStr
         if ((type & 0xe0) === 0xa0) {
             length = type & 0x1f;
             var startOffset = offset;
             offset++;
             var result = raw(length);
-            log(startOffset, offset - startOffset, "fixed length raw marker - " + result);
+            log(startOffset, offset - startOffset, "fixed str marker: &quot;" + result + "&quot;");
             return result;
         }
         // FixMap
@@ -332,7 +334,7 @@ function decode(dataView) {
             offset++;
             var parent = log(startOffset, offset - startOffset, "placeholder");
             var result = map(indent, length);
-            logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>fixed length map</a> marker with " + length + " items");
+            logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#map-format-family'>fixed length map</a> marker " + formatNumberOfItems(length));
             return result;
         }
         // FixArray
@@ -340,9 +342,9 @@ function decode(dataView) {
             length = type & 0x0f;
             var startOffset = offset;
             offset++;
-            var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
+            var parent = log(startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker " + formatNumberOfItems(length));
             var result = array(indent, length);
-            logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker with " + length + " items");
+            logedit(parent, startOffset, offset - startOffset, "<a href='" + SPEC + "#array-format-family'>fixed length array</a> marker " + formatNumberOfItems(length));
             return result;
         }
         // Positive FixNum
