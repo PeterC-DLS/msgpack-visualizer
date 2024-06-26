@@ -390,6 +390,11 @@ function parseInput() {
         case "base64":
             parseBase64(data);
             break;
+        case "file":
+            const filename = document.getElementById("filename").files;
+            console.log("file:", filename[0]);
+            parseFile(filename[0]);
+            break;
         case "array":
             parseArray(data);
             break;
@@ -402,6 +407,20 @@ function parseInput() {
         default:
             alert("Invalid input type: " + inputType);
     }
+}
+
+/**
+ * Parse the input as filename.
+ */
+function parseFile(file) {
+    const buff = file.arrayBuffer();
+    buff.then((b) => {
+        const dataView = new DataView(b);
+        showParsedData(dataView);
+    }).catch((e) => {
+        errlog("Error parsing input: " + e.message);
+        e.stack && errlog(e.stack);
+    });
 }
 
 /**
@@ -531,6 +550,21 @@ function urldecode(str) {
     return decodeURIComponent((str+'').replace(/\+/g, '%20'));
 }
 
+// switch file prompt field in form
+function selectFilePrompt(value, idPrefix) {
+    let thisSuffix;
+    let thatSuffix;
+    if (value == 'file') {
+        thisSuffix = value;
+        thatSuffix = 'data';
+    } else {
+        thisSuffix = 'data';
+        thatSuffix = 'file';
+    }
+    document.getElementById(idPrefix + thisSuffix).style.display = 'inline';
+    document.getElementById(idPrefix + thatSuffix).style.display = 'none';
+}
+
 onDocumentReady(function() {
     // Load initial data from URL hash
     var hashParams = getHashParams();
@@ -542,6 +576,12 @@ onDocumentReady(function() {
         var data = hashParams['base64'];
         var decoded = urldecode(data);
         document.getElementById('input-type').value = 'base64';
+        document.getElementById('data').value = decoded;
+    } else if (hashParams['file'] !== undefined) {
+        console.info('Loading file from URL hash');
+        var data = hashParams['file'];
+        var decoded = urldecode(data);
+        document.getElementById('input-type').value = 'file';
         document.getElementById('data').value = decoded;
     } else if (hashParams['array'] !== undefined) {
         console.info('Loading array literal data from URL hash');
@@ -556,4 +596,5 @@ onDocumentReady(function() {
         document.getElementById('input-type').value = 'hexarray';
         document.getElementById('data').value = decoded;
     }
+    selectFilePrompt(document.getElementById('input-type').value, 'input-wrapper-input-');
 });
