@@ -15,8 +15,8 @@
 
     <body id="home">
         <!-- Github badge -->
-        <a href="https://github.com/dbrgn/msgpack-visualizer">
-            <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub">
+        <a href="https://github.com/PeterC-DLS/msgpack-visualizer">
+            <img style="position: absolute; top: 0; right: 0; border: 0;" decoding="async" width="149" height="149" src="assets/forkme_right_green_007200.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" loading="lazy" data-recalc-dims="1">
         </a>
 
         <!-- Header -->
@@ -33,13 +33,19 @@
         <div id="content">
             <div id="input-wrapper">
                 <form action="javascript:parseInput()">
-                    <select id="input-type">
+                    <select id="input-type" onchange="selectFilePrompt(this.value, 'input-wrapper-input-')">
                         <option value="base64" selected>Base64:</option>
+                        <option value="file">File:</option>
                         <option value="array">Array:</option>
                         <option value="hexarray">Hex Array:</option>
                         <option value="ws_hexstream">WireShark Hex Stream:</option>
                     </select>
-                    <input type="text" id="data" style="width:60vw" value="hKdjb21wYWN0w6ZzY2hlbWEApnZhbHVlc5UBAsPCwKZuZXN0ZWSBpm5lc3RlZIGmbmVzdGVkAQ" />
+                    <div id="input-wrapper-input-data" style="display:none">
+                        <input type="text" id="data" style="width:60vw" value="hKdjb21wYWN0w6ZzY2hlbWEApnZhbHVlc5UBAsPCwKZuZXN0ZWSBpm5lc3RlZIGmbmVzdGVkAQ" />
+                    </div>
+                    <div id="input-wrapper-input-file" style="display:none">
+                        <input type="file" id="filename" style="width:60vw" />
+                    </div>
                     <button type="submit">Parse</button>
                 </form>
             </div>
