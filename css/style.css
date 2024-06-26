@@ -88,5 +88,7 @@ h1 {
     flex: 0 1 75%;
 }
 #json-obj {
+    font-family: monospace;
+    white-space: pre;
     word-break: break-all;
 }

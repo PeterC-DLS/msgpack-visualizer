@@ -221,10 +221,12 @@ function decode(dataView) {
                 return value;
             // uint64
             case 0xcf:
-                // value = buffer.readUInt64BE(offset + 1);
-                log(offset, 9, "uint64 marker - cannot parse uint64 to javascript, setting to Infinity");
+                const mu32b = dataView.getUint32(offset + 1);
+                const lu32b = dataView.getUint32(offset + 5);
+                value = (BigInt(mu32b) << 32n) | BigInt(lu32b);
+                log(offset, 9, "uint64 value " + value);
                 offset += 9;
-                return Infinity;
+                return value;
             // int 8
             case 0xd0:
                 value = dataView.getInt8(offset + 1);
@@ -245,9 +247,12 @@ function decode(dataView) {
                 return value;
             // int 64
             case 0xd3:
-                log(offset, 9, "int64 marker - cannot parse uint64 to javascript, setting to Infinity");
+                const ms32b = dataView.getInt32(offset + 1);
+                const ls32b = dataView.getUint32(offset + 5);
+                value = BigInt.asIntN(64, BigInt(ms32b) << 32n) | BigInt(ls32b);
+                log(offset, 9, "int64 value " + value);
                 offset += 9;
-                return Infinity;
+                return value;
             // map 16
             case 0xde:
 
@@ -476,6 +481,10 @@ function parseWSHexStream(data) {
 }
 
 
+function bigIntJSONReplacer(key, value) {
+    return typeof value === 'bigint' ? value.toString() : value;
+}
+
 /**
  * Show the parsed data on the page.
  */
@@ -484,7 +493,7 @@ function showParsedData(dataView) {
         const byteVal = dataView.getUint8(i);
         displayByte(byteVal, i);
     }
-    jsonobj.innerHTML = JSON.stringify(decode(dataView));
+    jsonobj.innerHTML = JSON.stringify(decode(dataView), bigIntJSONReplacer, 2);
 }
 
 // Document ready function, based on http://youmightnotneedjquery.com/
