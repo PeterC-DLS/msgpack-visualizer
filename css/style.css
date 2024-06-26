@@ -77,7 +77,7 @@ h1 {
     text-transform: uppercase;
 }
 #datadisplay a.highlight {
-    color: #33F;
+    color: rgb(223, 115, 14);
 }
 #output {
     flex-grow: 1;
