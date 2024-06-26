@@ -1,6 +1,6 @@
 # Msgpack Visualizer
 
-[https://msgpack.dbrgn.ch/](https://msgpack.dbrgn.ch/)
+https://peterc-dls.github.io/msgpack-visualizer
 
 This is a fork of a msgpack visualizer that
 [@sugendran](https://github.com/sugendran/) wrote. His original code can be
@@ -15,8 +15,10 @@ Stream" (`0102feff`)
 * Load initial data from hash parameter (`#base64=<data>` or `#array=<data>`)
 * Extract stylesheets and scripts from index.html into separate files
 * Some CSS tweaks
+* Add support for 64-bit integer items
+* Add support to parse local file
 
-You can find a hosted version at https://msgpack.dbrgn.ch/.
+You can find a hosted version at https://peterc-dls.github.io/msgpack-visualizer.
 
 ## Parameters
 
