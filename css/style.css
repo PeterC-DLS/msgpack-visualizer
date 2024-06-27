@@ -75,11 +75,7 @@ h1 {
     color: rgb(223, 115, 14);
 }
 #output {
-    flex-grow: 1;
     padding-left: 8px;
-    overflow-y: auto;
-    min-height: 100%;
-    height: 0;
     flex: 0 1 75%;
 }
 #json-obj {
@@ -88,10 +84,12 @@ h1 {
     word-break: break-all;
     max-height: 40ex;
     overflow-y: auto;
-    border-bottom: 2px solid #aaa;
 }
 #log {
-    flex-grow: 1;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 2px solid #aaa;
     overflow-y: auto;
-    height: fit-content;
+    min-height: 100%;
+    height: 0;
 }
