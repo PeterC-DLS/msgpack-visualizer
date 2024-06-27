@@ -27,11 +27,6 @@ body {
     text-align: right;
 }
 
-#output-wrapper {
-    display: flex;
-    flex-flow: row;
-    flex: 0 1 auto;
-}
 h1 {
     font-size: 48px;
     margin-bottom: 16px;
@@ -43,15 +38,15 @@ h1 {
     font-size: 16px;
     margin-bottom: 8px;
 }
-#input-wrapper {
-    margin-top: 8px;
-    margin-bottom: 16px;
-}
 #content {
     display: flex;
     flex-flow: column;
     flex: 0 1 auto;
     height: 100%;
+}
+#input-wrapper {
+    margin-top: 8px;
+    margin-bottom: 16px;
 }
 #output-wrapper {
     display: flex;
@@ -91,4 +86,12 @@ h1 {
     font-family: monospace;
     white-space: pre;
     word-break: break-all;
+    max-height: 40ex;
+    overflow-y: auto;
+    border-bottom: 2px solid #aaa;
+}
+#log {
+    flex-grow: 1;
+    overflow-y: auto;
+    height: fit-content;
 }

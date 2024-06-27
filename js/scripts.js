@@ -38,7 +38,7 @@ function log(position, length, str) {
     a.href = "#";
     a.className = "poslink";
     a.rel = position + "," + length;
-    a.innerHTML = "position " + position;
+    a.innerHTML = "posn " + position;
     a.addEventListener("mouseover", onPositionHover);
     div.appendChild(a);
     var span = document.createElement("span");
@@ -53,7 +53,7 @@ function logedit(div, position, length, str) {
     var span = div.children[1];
 
     a.rel = position + "," + length;
-    a.innerHTML = "position " + position;
+    a.innerHTML = "posn " + position;
     span.innerHTML = ": " + str;
 }
 
@@ -349,27 +349,25 @@ function decode(dataView) {
         }
         // Positive FixNum
         if ((type & 0x80) === 0x00) {
-            log(offset, 1, "positive fix length number with value " + type);
+            log(offset, 1, "positive fixint with value " + type);
             offset++;
             return type;
         }
         // Negative Fixnum
         if ((type & 0xe0) === 0xe0) {
             value = dataView.getInt8(offset);
-            log(offset, 1, "negative fix length number with value " + value);
+            log(offset, 1, "negative fixint with value " + value);
             offset++;
             return value;
         }
         throw new Error("Unknown type 0x" + type.toString(16));
     }
-    var value = parse(0);
-    if (offset !== dataView.byteLength) {
-        var overflow = dataView.byteLength - offset;
-        errlog(overflow + " trailing bytes");
-        var remainBytes = dataView.buffer.slice(offset, overflow);
-        errlog("trailing chars: " + raw(overflow));
+
+    const values = [];
+    while (offset < dataView.byteLength) {
+        values.push(parse(0));
     }
-    return value;
+    return values;
 }
 
 /**
